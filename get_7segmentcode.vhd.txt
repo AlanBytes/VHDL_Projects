@@ -1,0 +1,85 @@
+------------------------------------------------------------
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.std_logic_arith.all;
+UsE ieee.std_logic_unsigned .all;
+------------------------------------------------------------
+ENTITY lab5 IS
+	PORT( 
+		SW		: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		HEX0	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+		HEX1	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+		HEX2	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+		HEX3	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
+	);
+END ENTITY;
+------------------------------------------------------------
+ARCHITECTURE behavior OF lab5 IS
+
+	FUNCTION get_7segmentcode (ch: CHARACTER) RETURN STD_LOGIC_VECTOR IS
+	BEGIN
+		CASE ch IS
+			WHEN '0' => RETURN "1000000";
+			WHEN '1' => RETURN "1111001";
+			WHEN '2' => RETURN "0100100";
+			WHEN '3' => RETURN "0110000";
+			WHEN '4' => RETURN "0011001";
+			WHEN '5' => RETURN "0010010";
+			WHEN '6' => RETURN "0000010";
+			WHEN '7' => RETURN "1111000";
+			WHEN '8' => RETURN "0000000";
+			WHEN '9' => RETURN "0010000";
+			WHEN 'A' => RETURN "0001000"; --fing input values
+			WHEN 'F' => RETURN "0001110";
+			WHEN 'L' => RETURN "1000111";
+			WHEN 'M' => RETURN "0101010";
+			WHEN 'S' => RETURN "0010010";
+			WHEN 'U' => RETURN "1000001";
+			WHEN 'Y' => RETURN "0011000";
+			WHEN 'B' => RETURN "0000011";
+			WHEN others => RETURN "1111111";
+		END CASE;
+	END FUNCTION;
+
+	Type char_array IS ARRAY (0 TO 3) Of STD_LOGIC_Vector(6 DOWNTO 0);
+	SIGNAL display_chars : char_array;
+	
+	
+
+Begin
+	
+		PROCESS(SW)
+		BEGIN
+			IF SW = "00" then
+				display_chars <= (get_7segmentcode('F'),get_7segmentcode('A'),get_7segmentcode('M'),get_7segmentcode('U'));
+			ELSIF SW = "01" then
+				display_chars <= (get_7segmentcode('F'),get_7segmentcode('S'),get_7segmentcode('U'), "1111111");
+			ELSIF SW = "10" then
+				display_chars <= (get_7segmentcode('M'),get_7segmentcode('A'),get_7segmentcode('Y'),"1111111");
+			ELSE
+				display_chars <= (get_7segmentcode('A'),get_7segmentcode('B'), "1111111", "1111111");
+			END IF;
+		END PROCESS;
+		
+		HEX0 <= display_chars(3);
+		
+		HEX1 <= display_chars(2) WHEN SW = "00" ELSE
+				  display_chars(2) WHEN SW = "01" ELSE
+				  display_chars(2) WHEN SW = "10" ELSE
+				  display_chars(2);
+		
+		WITH SW SELECT	  
+			HEX2 <= 	display_chars(1) WHEN "00",
+						display_chars(1) WHEN "01",
+						display_chars(1) WHEN "10",
+						display_chars(1) WHEN OTHERS;
+		
+		GEN: FOR i IN 0 TO 6 GENERATE
+		HEX3(i) <= 	(NOT SW(1) AND NOT SW(0) AND display_chars(0)(i)) OR
+						(NOT SW(1) AND SW(0) AND display_chars(0)(i)) OR
+						(SW(1) AND NOT SW(0) AND display_chars(0)(i)) OR
+						(SW(1) AND SW(0) AND display_chars(0)(i));
+		END GENERATE;
+	
+END behavior;
+	
