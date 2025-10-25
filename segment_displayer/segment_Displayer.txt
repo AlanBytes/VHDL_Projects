@@ -4,7 +4,7 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 UsE ieee.std_logic_unsigned .all;
 ------------------------------------------------------------
-ENTITY lab5 IS
+ENTITY segmentDisplayer IS
 	PORT( 
 		SW		: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 		HEX0	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
@@ -14,7 +14,7 @@ ENTITY lab5 IS
 	);
 END ENTITY;
 ------------------------------------------------------------
-ARCHITECTURE behavior OF lab5 IS
+ARCHITECTURE behavior OF segmentDisplayer IS
 
 	FUNCTION get_7segmentcode (ch: CHARACTER) RETURN STD_LOGIC_VECTOR IS
 	BEGIN
