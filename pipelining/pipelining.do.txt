@@ -1,0 +1,35 @@
+-- Title: lab7.do
+-- Name: Alan Bernal
+-- Semester: Fall 2025
+-- Section 0002
+-- 10/24/2025
+
+##### Compile design
+set project_name "pipelining"
+vlib work
+vcom $project_name.vhd
+vsim work.${project_name}(fpga) -t ns
+
+##### Add I/0 signals to wave window
+radix -decimal
+add wave -divider "Inputs:"
+add wave CLOCK_50 a b c d
+add wave -divider "Local:"
+add wave a_r b_r c_r d_r s1 s2 s3 m1 m2 m3
+add wave -divider "Outputs:"
+add wave re im
+add wave -divider "Simulation by: Alan Bernal"
+
+##### Add stimuli data
+force CLOCK_50 0 0ns, 1 5ns -r 10ns
+radix -decimal
+force a 0 0ns, 20 20ns, 0 40ns
+force b 0 0ns, 10 20ns, 0 40ns
+force c 0 0ns, 40 20ns, 0 40ns
+force d 0 0ns, 30 20ns, 0 40ns
+
+##### Run the simulation 
+run 150ns
+wave zoomfull
+configure wave -gridperiod 10ns
+configure wave -timelineunits ns
